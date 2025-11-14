@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: 248 250 252; /* slate-50 */
+}
+
+html, body, #__next {
+  height: 100%;
+}
+
+body {
+  @apply bg-slate-50 text-slate-800 antialiased;
+}
+
+.container-wide {
+  @apply max-w-6xl mx-auto px-4;
+}
+
+.card {
+  @apply bg-white rounded-xl shadow-soft border border-slate-100;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors;
+}
+.btn-primary {
+  @apply bg-primary-600 text-white hover:bg-primary-700;
+}
+.btn-secondary {
+  @apply bg-accent-purple text-white hover:bg-violet-600;
+}
+.btn-outline {
+  @apply border border-slate-300 hover:bg-slate-50;
+}
+
+.badge {
+  @apply inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-700;
+}
+
+.input {
+  @apply block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500;
+}
+
+.progress {
+  @apply h-2 w-full overflow-hidden rounded-full bg-slate-200;
+}
+.progress-bar {
+  @apply h-full bg-primary-600 transition-all;
+}
+
+.shimmer {
+  background: linear-gradient(90deg, rgba(226,232,240,0.5) 25%, rgba(203,213,225,0.5) 37%, rgba(226,232,240,0.5) 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: 0 0; }
+}
+
+/* Dark mode base */
+html.dark body {
+  @apply bg-slate-950 text-slate-100;
+}
+
+/* Glass effect helpers */
+.glass {
+  @apply bg-white/70 dark:bg-slate-900/60 backdrop-blur border border-slate-200/60 dark:border-slate-700/60;
+}
+
+/* Gradient backgrounds */
+.bg-gradient-hero {
+  background-image: radial-gradient(1200px 600px at 10% 10%, rgba(99,102,241,0.25), transparent 60%),
+    radial-gradient(1200px 600px at 90% 20%, rgba(20,184,166,0.25), transparent 60%),
+    radial-gradient(1200px 600px at 50% 90%, rgba(59,130,246,0.25), transparent 60%);
+}
+
+/* Typography tweaks */
+.prose-base {
+  @apply leading-relaxed text-slate-700 dark:text-slate-300;
+}
+
+/* Smooth transitions */
+.smooth {
+  @apply transition-all duration-200 ease-out;
+}
+
+/* Button hover lift */
+.hover-lift:hover {
+  transform: translateY(-1px);
+}
