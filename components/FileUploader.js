@@ -11,14 +11,13 @@ const allowed = [
 export default function FileUploader({ onUploaded }) {
   const [file, setFile] = useState(null);
   const [progress, setProgress] = useState(0);
-  const [status, setStatus] = useState(null); // success | error
+  const [status, setStatus] = useState(null);
   const [message, setMessage] = useState('');
 
   const onSelect = (e) => {
     const f = e.target.files?.[0];
     if (!f) return;
 
-    // Validate file type
     if (!allowed.includes(f.type) && !/\.(pdf|docx|pptx|txt)$/i.test(f.name)) {
       setStatus('error');
       setMessage('Unsupported file type. Allowed: PDF, DOCX, PPTX, TXT');
@@ -34,85 +33,56 @@ export default function FileUploader({ onUploaded }) {
     if (!file) return;
 
     setProgress(5);
-    setStatus(null);
-    setMessage('Starting upload...');
+    setMessage('Uploading...');
 
     try {
       const form = new FormData();
       form.append('file', file);
-      form.append('fileName', file.name);
 
-      // IMPORTANT FIX — NO CUSTOM HEADERS (stops CORS failures)
       const res = await api.post('/api/upload', form, {
-        onUploadProgress: (evt) => {
-          if (!evt.total) return;
-          const pct = Math.round((evt.loaded * 100) / evt.total);
-          setProgress(Math.min(95, pct));
+        headers: {
+          'Content-Type': 'multipart/form-data',
         },
+        onUploadProgress: (evt) => {
+          if (evt.total) {
+            const pct = Math.round((evt.loaded * 100) / evt.total);
+            setProgress(Math.min(95, pct));
+          }
+        }
       });
 
       setProgress(100);
       setStatus('success');
-      setMessage(res.data?.message || 'File uploaded successfully');
-
-      // Pass uploaded file info to parent
+      setMessage('File uploaded successfully!');
       onUploaded?.(res.data);
+
     } catch (err) {
+      console.error(err);
       setStatus('error');
-      setMessage(err.response?.data?.message || 'Upload failed');
-      setProgress(0);
+      setMessage("Upload failed. Backend unreachable.");
     }
   };
 
   return (
     <div className="card p-6">
-      <div className="mb-4">
-        <input
-          type="file"
-          className="input"
-          onChange={onSelect}
-          accept=".pdf,.docx,.pptx,.txt"
-        />
-      </div>
+      <input type="file" className="input" onChange={onSelect} />
 
       {file && (
-        <div className="mb-3 text-sm text-slate-700">
-          Selected: <span className="font-medium">{file.name}</span>
-        </div>
+        <p className="mt-2 text-sm">Selected: {file.name}</p>
       )}
 
-      <div className="flex gap-2">
-        <button className="btn btn-primary" onClick={upload} disabled={!file}>
-          Upload
-        </button>
+      <button onClick={upload} className="btn btn-primary mt-4" disabled={!file}>
+        Upload
+      </button>
 
-        {status === 'success' && (
-          <a
-            href="#next"
-            className="btn btn-secondary"
-            onClick={(e) => e.preventDefault()}
-          >
-            Proceed to Summarizer or Quiz
-          </a>
-        )}
-      </div>
+      {message && (
+        <p className={`mt-2 text-sm ${status === 'error' ? 'text-red-600' : 'text-green-600'}`}>
+          {message}
+        </p>
+      )}
 
-      <div className="mt-4">
-        <div className="progress">
-          <div
-            className="progress-bar"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-
-        {message && (
-          <div
-            className={`mt-2 text-sm ${status === 'error' ? 'text-red-600' : 'text-slate-700'
-              }`}
-          >
-            {message}
-          </div>
-        )}
+      <div className="progress mt-2">
+        <div className="progress-bar" style={{ width: `${progress}%` }}></div>
       </div>
     </div>
   );
