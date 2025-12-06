@@ -1,153 +1,118 @@
-import { useEffect, useState } from 'react';
-import api from '../utils/api';
+import { useState } from "react";
+import api from "../utils/api";
 
-export default function QuizView({ fileId, difficulty = 'medium', count = 10 }) {
-  const [loading, setLoading] = useState(true);
-  const [questions, setQuestions] = useState([]);
-  const [revealed, setRevealed] = useState({});
-  const [marked, setMarked] = useState({});
-  const [error, setError] = useState(null);
+export default function QuizView({ fileId }) {
+  const [quiz, setQuiz] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const load = async () => {
+  // NEW: Difficulty + Number of Questions
+  const [difficulty, setDifficulty] = useState("medium");
+  const [numQuestions, setNumQuestions] = useState(10);
+
+  async function generateQuiz() {
     if (!fileId) return;
 
     setLoading(true);
-    setError(null);
+    setQuiz(null);
 
     try {
-      const res = await api.post('/api/quiz', {
+      const res = await api.post("/quiz", {
         fileId,
-        options: { difficulty, numQuestions: count },
+        difficulty,
+        numQuestions: Number(numQuestions),
       });
 
-      setQuestions(res.data.questions);
-    } catch (e) {
-      setError('Failed to generate quiz');
-    } finally {
-      setLoading(false);
+      setQuiz(res.data);
+    } catch (err) {
+      console.error("Quiz Error:", err);
     }
-  };
 
-  useEffect(() => {
-    load();
-  }, [fileId, difficulty, count]);
-
-  const exportJSON = () => {
-    const blob = new Blob([JSON.stringify({ questions }, null, 2)], {
-      type: 'application/json',
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'quiz.json';
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const exportCSV = () => {
-    const rows = [
-      [
-        'id',
-        'question',
-        'optionA',
-        'optionB',
-        'optionC',
-        'optionD',
-        'correctIndex',
-        'explanation',
-      ],
-      ...questions.map((q) => [
-        q.id,
-        q.question,
-        ...q.options,
-        q.correctIndex,
-        q.explanation,
-      ]),
-    ];
-    const csv = rows
-      .map((r) =>
-        r.map((x) => `"${String(x).replace(/"/g, '""')}"`).join(',')
-      )
-      .join('\n');
-
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'quiz.csv';
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  if (loading) return <div className="card p-6 shimmer h-40" />;
-  if (error) return <div className="text-red-600">{error}</div>;
+    setLoading(false);
+  }
 
   return (
-    <div className="space-y-4">
-      {questions.map((q, idx) => (
-        <div
-          key={q.id}
-          className={`card p-5 ${marked[q.id] ? 'ring-2 ring-accent-purple' : ''
-            }`}
-        >
-          <div className="flex items-start justify-between">
-            <h4 className="font-semibold">
-              {idx + 1}. {q.question}
-            </h4>
-            <div className="flex gap-2">
-              <button
-                className="btn btn-outline"
-                onClick={() =>
-                  setMarked((m) => ({ ...m, [q.id]: !m[q.id] }))
-                }
-              >
-                {marked[q.id] ? 'Unmark' : 'Mark for review'}
-              </button>
-              <button
-                className="btn btn-primary"
-                onClick={() =>
-                  setRevealed((r) => ({ ...r, [q.id]: !r[q.id] }))
-                }
-              >
-                {revealed[q.id] ? 'Hide answer' : 'Reveal answer'}
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
-            {q.options.map((opt, i) => (
-              <div
-                key={i}
-                className={`rounded-lg border p-3 ${revealed[q.id] && i === q.correctIndex
-                    ? 'border-green-500 bg-green-50'
-                    : 'border-slate-200'
-                  }`}
-              >
-                {String.fromCharCode(65 + i)}. {opt}
-              </div>
-            ))}
-          </div>
-
-          {revealed[q.id] && (
-            <p className="text-sm text-slate-700 mt-3">
-              <span className="font-medium">Explanation:</span>{' '}
-              {q.explanation}
-            </p>
-          )}
+    <div className="p-4">
+      {/* Controls */}
+      <div className="flex gap-6 mb-6 items-center">
+        <div>
+          <label className="font-semibold block mb-1">Difficulty</label>
+          <select
+            className="border p-2 rounded"
+            value={difficulty}
+            onChange={(e) => setDifficulty(e.target.value)}
+          >
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
         </div>
-      ))}
 
-      <div className="flex gap-2">
-        <button className="btn btn-primary" onClick={load}>
-          Regenerate quiz
-        </button>
-        <button className="btn btn-outline" onClick={exportJSON}>
-          Export JSON
-        </button>
-        <button className="btn btn-outline" onClick={exportCSV}>
-          Export CSV
+        <div>
+          <label className="font-semibold block mb-1">
+            Number of Questions
+          </label>
+          <select
+            className="border p-2 rounded"
+            value={numQuestions}
+            onChange={(e) => setNumQuestions(e.target.value)}
+          >
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+          </select>
+        </div>
+
+        <button
+          onClick={generateQuiz}
+          className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg shadow"
+        >
+          {loading ? "Generating..." : "Generate Quiz"}
         </button>
       </div>
+
+      {/* Quiz Output */}
+      {quiz && quiz.questions && (
+        <div className="space-y-6">
+          {quiz.questions.map((q, index) => (
+            <div
+              key={q.id}
+              className="p-4 border rounded-xl bg-gray-50 shadow-sm"
+            >
+              <h3 className="font-bold text-lg mb-2">
+                {index + 1}. {q.question}
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {q.options.map((opt, i) => (
+                  <div
+                    key={i}
+                    className="p-3 border rounded-md cursor-pointer bg-white hover:bg-blue-50 transition"
+                  >
+                    <span className="font-semibold mr-2">
+                      {String.fromCharCode(65 + i)}.
+                    </span>
+                    {opt}
+                  </div>
+                ))}
+              </div>
+
+              {/* Explanation (Optional) */}
+              {q.explanation && (
+                <p className="text-sm text-gray-600 mt-3">
+                  <strong>Explanation:</strong> {q.explanation}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {!quiz && !loading && (
+        <p className="text-gray-500 text-center mt-10">
+          Click <strong>Generate Quiz</strong> to create questions.
+        </p>
+      )}
     </div>
   );
 }
