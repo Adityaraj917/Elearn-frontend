@@ -11,7 +11,7 @@ import {
   Sparkles, Target, TrendingUp, BookOpen, ChevronRight, Map, Calendar
 } from "lucide-react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+import { API_URL } from "../../utils/api";
 
 export default function SkillTest() {
   const router = useRouter();
@@ -114,6 +114,8 @@ export default function SkillTest() {
     setEvaluating(true);
 
     const uid = auth.currentUser?.uid || "guest";
+    let calculatedScore = 0;
+    test.questions.forEach(q => { if (answers[q.id] === q.correctIndex) calculatedScore++; });
 
     try {
       const profile = JSON.parse(localStorage.getItem("saarthi_profile") || "{}");
@@ -142,9 +144,7 @@ export default function SkillTest() {
       recordQuizResult({ subject, score: evalData.score, total: evalData.total, weakTopics: evalData.weaknesses || [], strongTopics: evalData.strengths || [], source: 'skill_test' });
       addActivity('skill_test_complete', `${subject}: ${evalData.score}/${evalData.total}`);
     } catch (err) {
-      let s = 0;
-      test.questions.forEach(q => { if (answers[q.id] === q.correctIndex) s++; });
-      setEvaluation({ score: s, total: test.questions.length, percentage: Math.round(s / test.questions.length * 100),
+      setEvaluation({ score: calculatedScore, total: test.questions.length, percentage: Math.round(calculatedScore / test.questions.length * 100),
         strengths: ["Attempted all questions"], weaknesses: ["Could not analyze — backend offline"],
         recommendations: ["Try again when backend is available"], roadmap: [], adaptiveSuggestions: [] });
     }
@@ -153,7 +153,7 @@ export default function SkillTest() {
     // Dispatch event so floating AI mentor reacts
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('saarthi-activity', {
-        detail: { subject, score: evaluation?.score || s, total: evaluation?.total || test.questions.length }
+        detail: { subject, score: evaluation?.score || calculatedScore, total: evaluation?.total || test.questions.length }
       }));
     }
   };

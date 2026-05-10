@@ -57,6 +57,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let unsubscribe;
     const fetchProfile = async () => {
       try {
         const mode = typeof window !== "undefined" ? localStorage.getItem("saarthi_mode") : null;
@@ -64,24 +65,39 @@ export default function Dashboard() {
           const stored = localStorage.getItem("saarthi_profile");
           if (stored) setProfile(JSON.parse(stored));
           else { router.push("/onboarding"); return; }
+          
+          addActivity('dashboard_visit', 'Opened dashboard');
+          recordSessionTiming();
+          setLoading(false);
         } else {
-          const unsubscribe = auth.onAuthStateChanged(async (user) => {
+          unsubscribe = auth.onAuthStateChanged(async (user) => {
             if (user) {
               const docRef = doc(db, "users", user.uid);
               const docSnap = await getDoc(docRef);
               if (docSnap.exists() && docSnap.data().onboardingData) {
                 setProfile(docSnap.data().onboardingData);
-              } else { router.push("/onboarding"); return; }
-            } else { router.push("/mode"); return; }
+                addActivity('dashboard_visit', 'Opened dashboard');
+                recordSessionTiming();
+              } else { 
+                router.push("/onboarding"); 
+                return; 
+              }
+            } else { 
+              router.push("/mode"); 
+              return; 
+            }
+            setLoading(false);
           });
-          return () => unsubscribe();
         }
-        addActivity('dashboard_visit', 'Opened dashboard');
-        recordSessionTiming();
-      } catch (err) { console.error(err); }
-      finally { setLoading(false); }
+      } catch (err) { 
+        console.error(err); 
+        setLoading(false);
+      }
     };
     fetchProfile();
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, [router]);
 
   const handleLogout = () => {

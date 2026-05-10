@@ -26,17 +26,17 @@ export default function AIMentor() {
 
   // Only show on dashboard routes
   const isDashboard = router.pathname.startsWith('/dashboard');
-  if (!isDashboard) return null;
 
   // Generate messages on open
   useEffect(() => {
-    if (open && messages.length === 0) {
+    if (isDashboard && open && messages.length === 0) {
       setMessages(generateMentorConversation());
     }
-  }, [open]);
+  }, [open, isDashboard]);
 
   // Listen for post-quiz events
   useEffect(() => {
+    if (!isDashboard) return;
     const handler = (e) => {
       const { subject, score, total } = e.detail || {};
       if (subject && score !== undefined && total) {
@@ -52,7 +52,7 @@ export default function AIMentor() {
     };
     window.addEventListener('saarthi-activity', handler);
     return () => window.removeEventListener('saarthi-activity', handler);
-  }, []);
+  }, [isDashboard]);
 
   // Clear "new" indicator when opened
   useEffect(() => {
@@ -82,6 +82,9 @@ export default function AIMentor() {
       }, 300);
     }
   }, [voiceLang, speakingIdx]);
+
+  // Early return AFTER all hooks to satisfy Rules of Hooks
+  if (!isDashboard) return null;
 
   const emotionColor = (emotion) => {
     switch (emotion) {

@@ -12,7 +12,7 @@ import {
   Loader2, Lightbulb, Compass, ArrowRight
 } from "lucide-react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+import { API_URL } from "../../utils/api";
 
 export default function CareerExplorer() {
   const router = useRouter();

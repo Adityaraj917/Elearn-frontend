@@ -1,5 +1,5 @@
 // Proxy summary requests to the Express backend (real Gemini AI)
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:4000";
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL || (process.env.NODE_ENV === "production" ? "https://saarthi-backend-x96o.onrender.com" : "http://localhost:4000");
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });

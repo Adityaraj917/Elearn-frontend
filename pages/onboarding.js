@@ -8,7 +8,7 @@ import { Sparkles, Loader2, ArrowRight, CheckCircle2 } from "lucide-react";
 import { initMemoryFromOnboarding, addActivity } from "../utils/studentMemory";
 import ThemeToggle from "../components/ThemeToggle";
 
-const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+import { API_URL } from "../utils/api";
 
 /* ═══════════════════════════════════════════
    FIXED PERSONALIZATION QUESTIONS
