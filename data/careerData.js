@@ -1128,6 +1128,203 @@ const physicsCareerData = {
         other: "Comfort with both physics and biology concepts"
       },
       salaryRange: { entry: "₹6-12 LPA", mid: "₹12-30 LPA", senior: "₹25-50+ LPA" }
+    },
+
+    // ===== DEFENSE & ARMED FORCES (NEW) =====
+    {
+      id: "nda_officer", title: "NDA Officer (Army/Navy/Air Force)", category: "Defense & Armed Forces", icon: "🎖️",
+      shortDesc: "Join India's elite military through the National Defence Academy — open after Class 10+2.",
+      description: "The National Defence Academy (NDA) is India's premier joint services military academy. Cadets train for Army, Navy, and Air Force simultaneously. Physics students excel here due to strong analytical and problem-solving skills. NDA produces officers who lead in combat, strategy, and national security.",
+      dailyLife: "Rigorous physical training, academic classes (BSc), weapons training, drill parades, adventure activities, leadership exercises. Life is disciplined, structured, and deeply rewarding.",
+      roadmap: [
+        { step: 1, title: "Class 10-12", detail: "Study PCM. Maintain physical fitness. Start preparing for NDA written exam from Class 11." },
+        { step: 2, title: "NDA Exam (UPSC)", detail: "Appear after Class 12. Written exam (Maths + GAT) followed by SSB Interview (5 days)." },
+        { step: 3, title: "NDA Training", detail: "3 years at NDA Khadakwasla, Pune. BSc degree + military training." },
+        { step: 4, title: "Service Academy", detail: "1 year at IMA (Army), INA (Navy), or AFA (Air Force) for specialized training." },
+        { step: 5, title: "Commission", detail: "Commissioned as Lieutenant. Serve the nation in your chosen service." }
+      ],
+      requiredSubjects: ["Physics", "Mathematics", "General Knowledge"],
+      keyExams: [
+        { name: "NDA Exam (UPSC)", description: "Written exam twice a year (April & September). Maths (300 marks) + GAT (600 marks).", difficulty: "Hard" },
+        { name: "SSB Interview", description: "5-day Services Selection Board assessment — psychological, physical, group tasks.", difficulty: "Very Hard" }
+      ],
+      alternativeExams: [
+        { name: "CDS Exam", description: "Combined Defence Services — for graduates to join military." },
+        { name: "AFCAT", description: "Air Force Common Admission Test — graduate entry to IAF." }
+      ],
+      perks: ["Salary: ₹8-12 LPA (Lieutenant) → ₹25-50 LPA (Colonel/Captain)", "Free housing, medical, canteen, travel concessions", "Highest respect and prestige in Indian society", "Adventure: mountaineering, skydiving, scuba diving", "Pension for life after 20 years of service", "Opportunity to serve and protect the nation"],
+      risks: ["Life-threatening situations in combat zones", "Postings in remote/harsh areas (Siachen, deserts)", "Long separations from family", "Strict discipline — limited personal freedom", "Physical injuries are common"],
+      socialImpact: "Armed forces officers protect 1.4 billion Indians. They serve during natural disasters, maintain internal security, and represent India globally in UN peacekeeping missions.",
+      eligibility: { minQualification: "Class 12 pass (PCM for Air Force/Navy technical)", ageLimit: "16.5 to 19.5 years at time of NDA exam", physicalReq: "Strict physical and medical standards — eyesight, height, weight", other: "Unmarried Indian male citizens (women via CDS/AFCAT)" },
+      salaryRange: { entry: "₹8-12 LPA", mid: "₹15-30 LPA", senior: "₹30-50+ LPA" }
+    },
+    {
+      id: "iaf_officer", title: "Indian Air Force Officer / Pilot", category: "Defense & Armed Forces", icon: "✈️",
+      shortDesc: "Fly fighter jets, transport aircraft, or helicopters for the Indian Air Force.",
+      description: "IAF officers with physics backgrounds excel as pilots and technical officers. Physics understanding of aerodynamics, propulsion, and navigation is directly applicable. Fly Sukhoi-30MKI, Rafale, Tejas, or command air defense systems.",
+      dailyLife: "Flying missions, simulator training, aircraft maintenance oversight, mission planning, physical training, squadron leadership, emergency response readiness.",
+      roadmap: [
+        { step: 1, title: "Class 10-12", detail: "PCM mandatory for flying branch. Maintain excellent physical fitness and eyesight." },
+        { step: 2, title: "Entry Route", detail: "NDA (after 12th) OR AFCAT (after graduation) OR CDS exam." },
+        { step: 3, title: "Flying Training", detail: "1.5 years at Air Force Academy, Dundigal. Basic → Intermediate → Advanced flying." },
+        { step: 4, title: "Commission & Posting", detail: "Wings ceremony → posted to operational squadrons across India." }
+      ],
+      requiredSubjects: ["Physics", "Mathematics"],
+      keyExams: [
+        { name: "AFCAT", description: "Air Force Common Admission Test — twice yearly for graduates.", difficulty: "Hard" },
+        { name: "NDA (Air Force)", description: "Through NDA exam for 12th pass candidates.", difficulty: "Hard" },
+        { name: "AFSB Interview", description: "Air Force Selection Board — rigorous 5-day assessment.", difficulty: "Very Hard" }
+      ],
+      alternativeExams: [{ name: "CDS Exam", description: "Combined Defence Services for graduate entry." }],
+      perks: ["Fly multi-million dollar fighter jets", "Salary: ₹10-15 LPA (Flying Officer) → ₹30-60 LPA (Air Marshal)", "Free accommodation, medical, travel", "One of the most respected professions in India", "Adventure and adrenaline every day"],
+      risks: ["High-risk profession — flying combat aircraft", "Strict medical requirements especially eyesight", "Postings across India including remote air bases", "Long training period before operational flying"],
+      socialImpact: "IAF protects India's airspace, provides disaster relief, and conducts humanitarian missions. Pilots are national heroes during conflicts.",
+      eligibility: { minQualification: "Class 12 PCM (NDA) or Graduation (AFCAT)", ageLimit: "16.5-19.5 (NDA), 20-24 (AFCAT Flying)", physicalReq: "6/6 eyesight for pilots, strict medical standards", other: "Indian citizen, unmarried for NDA" },
+      salaryRange: { entry: "₹10-15 LPA", mid: "₹20-35 LPA", senior: "₹35-60+ LPA" }
+    },
+    {
+      id: "navy_officer", title: "Indian Navy Officer", category: "Defense & Armed Forces", icon: "⚓",
+      shortDesc: "Command warships, submarines, and naval aviation for India's maritime security.",
+      description: "Navy officers with physics backgrounds serve in executive, engineering, and technical branches. Understanding of sonar physics, radar, navigation, propulsion systems, and nuclear submarine technology makes physics students ideal candidates.",
+      dailyLife: "Ship operations, navigation watches, weapons systems management, submarine operations, fleet exercises, port visits to foreign countries, naval aviation.",
+      roadmap: [
+        { step: 1, title: "Class 10-12", detail: "PCM is essential. Build swimming skills — mandatory for Navy." },
+        { step: 2, title: "Entry", detail: "NDA (Naval Academy) after 12th OR INET/CDS after graduation." },
+        { step: 3, title: "Training", detail: "Training at Indian Naval Academy, Ezhimala, Kerala. 4 years (NDA entry) or 1 year (graduate entry)." },
+        { step: 4, title: "Specialization", detail: "Choose: Executive, Engineering, Electrical, Naval Aviation, or Submarine branch." }
+      ],
+      requiredSubjects: ["Physics", "Mathematics"],
+      keyExams: [
+        { name: "NDA (Navy)", description: "Through UPSC NDA exam.", difficulty: "Hard" },
+        { name: "INET", description: "Indian Navy Entrance Test for graduates.", difficulty: "Hard" },
+        { name: "SSB Interview", description: "5-day selection process.", difficulty: "Very Hard" }
+      ],
+      alternativeExams: [{ name: "10+2 B.Tech Entry", description: "Direct entry to Naval Academy for PCM students after 12th." }],
+      perks: ["Travel the world — port visits to 30+ countries", "Salary: ₹8-12 LPA (Sub Lieutenant) → ₹30-50 LPA (Admiral)", "Free housing, medical, canteen for life", "Submarine officers get extra submarine pay", "Prestigious uniform and social respect"],
+      risks: ["Months away from family during deployments", "Seasickness and harsh sea conditions", "Swimming proficiency mandatory", "Submarine service is claustrophobic"],
+      socialImpact: "Indian Navy protects maritime borders, combats piracy, provides disaster relief during tsunamis and cyclones, and maintains peace in the Indian Ocean region.",
+      eligibility: { minQualification: "Class 12 PCM or Engineering degree", ageLimit: "16.5-19.5 (NDA), 19-24 (INET)", physicalReq: "Swimming ability mandatory, strict medical", other: "Indian citizen" },
+      salaryRange: { entry: "₹8-12 LPA", mid: "₹15-30 LPA", senior: "₹30-50+ LPA" }
+    },
+    {
+      id: "army_tes", title: "Indian Army (Technical Entry Scheme)", category: "Defense & Armed Forces", icon: "🪖",
+      shortDesc: "Join the Indian Army as a technical officer directly after Class 12 PCM.",
+      description: "The 10+2 Technical Entry Scheme (TES) is a unique opportunity for PCM students to join the Indian Army as officers without any entrance exam — selection is based on JEE Main cutoff and SSB interview. You get a B.Tech degree from CME Pune while serving.",
+      dailyLife: "Technical training, weapons systems maintenance, combat engineering, bridge building, mine clearance, leading soldiers, adventure training.",
+      roadmap: [
+        { step: 1, title: "Class 12 (PCM)", detail: "Score 70%+ in PCM aggregate. Apply through Indian Army website." },
+        { step: 2, title: "Shortlisting", detail: "Based on JEE Main marks or PCM percentage. No separate written exam." },
+        { step: 3, title: "SSB Interview", detail: "5-day Services Selection Board assessment." },
+        { step: 4, title: "Training", detail: "5 years: 1 year OTA Gaya + 4 years B.Tech at CME Pune/MCTE Mhow." }
+      ],
+      requiredSubjects: ["Physics", "Mathematics", "Chemistry"],
+      keyExams: [{ name: "SSB Interview", description: "Only selection stage — no written exam. Based on JEE/board marks.", difficulty: "Very Hard" }],
+      alternativeExams: [{ name: "NDA", description: "Alternative army entry through NDA exam." }, { name: "CDS", description: "For graduates." }],
+      perks: ["Free B.Tech degree while earning salary", "Salary starts from training period", "All army benefits — housing, medical, canteen", "Fast career progression", "No entrance exam — based on JEE/board marks"],
+      risks: ["Combat deployments in conflict zones", "Rigorous 5-year commitment minimum", "Strict military discipline", "Remote postings"],
+      socialImpact: "Army technical officers maintain critical defense infrastructure, build bridges in disaster zones, and ensure combat readiness of India's land forces.",
+      eligibility: { minQualification: "Class 12 PCM with 70%+", ageLimit: "16.5-19.5 years", physicalReq: "Army physical standards", other: "Unmarried male Indian citizens" },
+      salaryRange: { entry: "₹8-10 LPA", mid: "₹15-25 LPA", senior: "₹25-45+ LPA" }
+    },
+    {
+      id: "coast_guard", title: "Indian Coast Guard Officer", category: "Defense & Armed Forces", icon: "🚢",
+      shortDesc: "Protect India's coastline, conduct sea rescue, and combat maritime crimes.",
+      description: "The Coast Guard is India's maritime law enforcement and search-and-rescue agency. Physics knowledge is used in navigation, radar, communication systems, and pollution control technology. Less combat-focused than Navy but equally important.",
+      dailyLife: "Coastal patrol, search and rescue operations, anti-smuggling operations, pollution response, fishermen assistance, maritime surveillance.",
+      roadmap: [
+        { step: 1, title: "Class 12 PCM", detail: "Score well in Physics and Mathematics." },
+        { step: 2, title: "CGECT", detail: "Coast Guard Exam — written test based on Maths, Physics, English, GK." },
+        { step: 3, title: "Training", detail: "Training at Indian Coast Guard Academy, Mangalore." },
+        { step: 4, title: "Posting", detail: "Posted to Coast Guard stations along India's 7,500km coastline." }
+      ],
+      requiredSubjects: ["Physics", "Mathematics", "English"],
+      keyExams: [{ name: "Coast Guard Assistant Commandant Exam", description: "Written + physical + interview.", difficulty: "Moderate-Hard" }],
+      alternativeExams: [{ name: "Navik (GD/DB)", description: "Non-officer entry into Coast Guard." }],
+      perks: ["Meaningful work — save lives at sea", "Salary: ₹7-10 LPA (entry) → ₹25-40 LPA (senior)", "Government benefits and pension", "Less combat risk than Army/Navy", "Coastal city postings"],
+      risks: ["Sea operations in rough weather", "Away from family during patrols", "Limited positions annually", "Swimming ability essential"],
+      socialImpact: "Coast Guard saves thousands of fishermen annually, prevents smuggling, protects marine environment, and secures India's maritime borders.",
+      eligibility: { minQualification: "Class 12 PCM or Engineering degree", ageLimit: "Varies by entry (typically 21-25)", physicalReq: "Swimming, medical fitness", other: "Indian citizen" },
+      salaryRange: { entry: "₹7-10 LPA", mid: "₹12-25 LPA", senior: "₹25-40+ LPA" }
+    },
+    {
+      id: "ips_officer", title: "IPS Officer (Indian Police Service)", category: "Government & Administration", icon: "👮",
+      shortDesc: "Lead law enforcement, investigate crimes, and maintain public safety.",
+      description: "IPS officers lead police forces across India. Physics optional in UPSC is popular and scoring. Physics thinking helps in forensics, cyber crime investigation, and scientific approach to policing. IPS officers command respect and authority.",
+      dailyLife: "Law and order management, crime investigation, VIP security, traffic management, community policing, cyber crime units, anti-terrorism operations.",
+      roadmap: [
+        { step: 1, title: "Class 10-12", detail: "Any stream. Start building general awareness early." },
+        { step: 2, title: "Graduation", detail: "Any Bachelor's degree. Physics optional in UPSC is advantageous." },
+        { step: 3, title: "UPSC CSE", detail: "Clear Prelims, Mains, and Interview. Physics as optional subject." },
+        { step: 4, title: "Training", detail: "1 year at SVPNPA (Sardar Vallabhbhai Patel National Police Academy), Hyderabad." }
+      ],
+      requiredSubjects: ["Any graduate degree", "Physics optional is advantageous"],
+      keyExams: [{ name: "UPSC Civil Services", description: "India's toughest exam — Prelims + Mains + Interview.", difficulty: "Extremely Hard" }],
+      alternativeExams: [{ name: "State PSC", description: "State police service through state public service commissions." }],
+      perks: ["Power to maintain law and order", "Salary: ₹8-12 LPA + massive perks (car, bungalow, staff)", "Highest social prestige", "Job security for life", "Directly impact public safety"],
+      risks: ["Extremely competitive exam (0.1% success rate)", "Dangerous situations regularly", "Political pressure", "Frequent transfers"],
+      socialImpact: "IPS officers protect citizens, fight organized crime, investigate corruption, and ensure justice. One good police officer can transform an entire district.",
+      eligibility: { minQualification: "Any Bachelor's degree", ageLimit: "21-32 years (General)", physicalReq: "Physical fitness test mandatory", other: "Indian citizenship required" },
+      salaryRange: { entry: "₹8-12 LPA + perks", mid: "₹15-25 LPA + perks", senior: "₹25-40 LPA + perks" }
+    },
+    {
+      id: "forensic_scientist", title: "Forensic Scientist", category: "Interdisciplinary", icon: "🔍",
+      shortDesc: "Use physics and science to solve crimes — ballistics, fingerprints, digital forensics.",
+      description: "Forensic scientists apply physics principles (ballistics, optics, spectroscopy, material analysis) to analyze crime scene evidence. They work in government forensic labs, CBI, state police forensic departments, and private agencies.",
+      dailyLife: "Analyzing evidence (bullets, bloodstains, fibers), operating lab instruments, writing expert reports, testifying in court, crime scene investigation, digital forensics.",
+      roadmap: [
+        { step: 1, title: "Class 10-12", detail: "PCM or PCB. Interest in science and investigation." },
+        { step: 2, title: "Bachelor's", detail: "B.Sc. Forensic Science (LNJN NICFS Delhi, Gujarat Forensic Sciences Univ) or B.Sc. Physics." },
+        { step: 3, title: "Master's", detail: "M.Sc. Forensic Science with specialization in Physics/Ballistics/Digital Forensics." },
+        { step: 4, title: "Career", detail: "Join CFSL, State FSLs, CBI, NIA, or private forensic consultancies." }
+      ],
+      requiredSubjects: ["Physics", "Chemistry", "Biology (helpful)"],
+      keyExams: [{ name: "CFSL Recruitment", description: "Central Forensic Science Lab recruitment through UPSC/SSC.", difficulty: "Moderate-Hard" }],
+      alternativeExams: [{ name: "State FSL Recruitment", description: "State forensic lab positions." }],
+      perks: ["Fascinating work — solve real crimes", "Salary: ₹5-10 LPA (entry) → ₹15-30 LPA (senior)", "Government job security", "Growing demand with increasing crime complexity", "TV-show-like exciting work"],
+      risks: ["Graphic crime scene evidence", "Court appearances and legal pressure", "Limited positions in India", "Emotionally taxing cases"],
+      socialImpact: "Forensic scientists ensure justice by providing scientific evidence in criminal cases. They help convict the guilty and free the innocent.",
+      eligibility: { minQualification: "M.Sc. Forensic Science", ageLimit: "Varies by recruitment", physicalReq: "None", other: "Attention to detail essential" },
+      salaryRange: { entry: "₹5-10 LPA", mid: "₹10-20 LPA", senior: "₹20-35+ LPA" }
+    },
+    {
+      id: "nanotechnologist", title: "Nanotechnologist", category: "Emerging Technology", icon: "🔬",
+      shortDesc: "Engineer materials at the atomic level — create revolutionary materials and devices.",
+      description: "Nanotechnology operates at the scale of atoms and molecules. Physicists design nanomaterials for solar cells, drug delivery, water purification, and electronics. India's Nano Mission and IITs are investing heavily in this field.",
+      dailyLife: "Synthesizing nanomaterials, electron microscopy, characterization of nanostructures, publishing research, collaborating with industry for applications.",
+      roadmap: [
+        { step: 1, title: "Class 10-12", detail: "PCM. Strong foundation in Modern Physics and Chemistry." },
+        { step: 2, title: "Bachelor's", detail: "B.Sc. Physics or B.Tech in relevant engineering." },
+        { step: 3, title: "Master's/PhD", detail: "M.Tech/PhD in Nanotechnology from IITs, IISc, or JNCASR." },
+        { step: 4, title: "Career", detail: "Research labs, semiconductor companies, pharma, or academia." }
+      ],
+      requiredSubjects: ["Physics", "Chemistry", "Mathematics"],
+      keyExams: [{ name: "GATE (Physics/Nano)", description: "For M.Tech admissions.", difficulty: "Hard" }],
+      alternativeExams: [{ name: "CSIR NET", description: "For research fellowships." }],
+      perks: ["Work on the next industrial revolution", "Salary: ₹8-15 LPA (entry) → ₹25-60 LPA (senior)", "Growing global demand", "Interdisciplinary and innovative work"],
+      risks: ["Still emerging — limited industry jobs in India", "Long academic path (PhD often needed)", "Safety concerns with nanoparticles", "Requires both physics and chemistry expertise"],
+      socialImpact: "Nanotechnology enables clean water purification, targeted cancer treatment, efficient solar energy, and stronger/lighter materials for construction and defense.",
+      eligibility: { minQualification: "M.Tech/PhD Nanotechnology", ageLimit: "None", physicalReq: "None", other: "Lab skills essential" },
+      salaryRange: { entry: "₹8-15 LPA", mid: "₹15-35 LPA", senior: "₹35-60+ LPA" }
+    },
+    {
+      id: "renewable_energy", title: "Renewable Energy Engineer", category: "Emerging Technology", icon: "☀️",
+      shortDesc: "Design solar panels, wind turbines, and clean energy systems for a sustainable future.",
+      description: "Renewable energy engineers apply physics of photovoltaics, thermodynamics, and fluid mechanics to design clean energy solutions. India targets 500 GW renewable energy by 2030 — massive job opportunities.",
+      dailyLife: "Designing solar/wind farm layouts, energy yield analysis, grid integration, project management, R&D on new materials, policy advisory.",
+      roadmap: [
+        { step: 1, title: "Class 10-12", detail: "PCM. Focus on Thermodynamics, Optics, Electricity." },
+        { step: 2, title: "Bachelor's", detail: "B.Tech in Electrical/Mechanical/Energy Engineering." },
+        { step: 3, title: "Specialization", detail: "M.Tech in Renewable Energy or Solar Technology (IIT Bombay, IIT Delhi)." },
+        { step: 4, title: "Career", detail: "Join Adani Green, Tata Power Solar, ReNew Power, NTPC, or startups." }
+      ],
+      requiredSubjects: ["Physics", "Mathematics", "Environmental Science"],
+      keyExams: [{ name: "JEE/GATE", description: "For engineering admissions.", difficulty: "Hard" }],
+      alternativeExams: [{ name: "MNRE Certifications", description: "Ministry of New & Renewable Energy certifications." }],
+      perks: ["Save the planet while earning well", "Salary: ₹6-12 LPA (entry) → ₹20-50 LPA (senior)", "India's fastest growing energy sector", "Government incentives and subsidies", "Global career opportunities"],
+      risks: ["Project-based work in remote solar/wind farm locations", "Policy changes can affect industry", "Technology evolving rapidly", "Initial salaries may be moderate"],
+      socialImpact: "Renewable energy engineers directly combat climate change, reduce air pollution, and provide clean electricity to millions of homes.",
+      eligibility: { minQualification: "B.Tech/M.Tech in relevant field", ageLimit: "None", physicalReq: "Ability to visit field sites", other: "Environmental awareness" },
+      salaryRange: { entry: "₹6-12 LPA", mid: "₹12-30 LPA", senior: "₹30-50+ LPA" }
     }
   ],
 
@@ -1136,6 +1333,7 @@ const physicsCareerData = {
     { id: "emerging", name: "Emerging Technology", icon: "🔮", color: "from-cyan-500 to-blue-600" },
     { id: "engineering", name: "Engineering", icon: "⚙️", color: "from-orange-500 to-red-500" },
     { id: "technology", name: "Technology", icon: "💻", color: "from-green-500 to-emerald-600" },
+    { id: "armed_forces", name: "Defense & Armed Forces", icon: "🎖️", color: "from-red-600 to-orange-600" },
     { id: "defense", name: "Defense & Government", icon: "🛡️", color: "from-blue-600 to-indigo-700" },
     { id: "healthcare", name: "Healthcare", icon: "🏥", color: "from-rose-500 to-pink-600" },
     { id: "education", name: "Education", icon: "📚", color: "from-amber-500 to-yellow-600" },

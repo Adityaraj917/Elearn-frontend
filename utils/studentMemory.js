@@ -32,6 +32,19 @@ const DEFAULT_MEMORY = {
   sessionDates: [],      // ISO date strings for streak calculation
   sessionTimings: [],    // last 30 activity hours: { hour, day, timestamp } for heatmap
   
+  // Behavioral tracking (Phase 2)
+  loginCount: 0,
+  loginDates: [],           // ISO dates of each login
+  goalAlignmentHistory: [], // { date, score, analysis }
+  lastSkillTestDate: null,
+  skillTestRequired: false,
+  behaviorProfile: {
+    consistency: 0,         // 0-100
+    focusAlignment: 0,      // 0-100
+    effortTrend: 'stable',  // 'increasing' | 'stable' | 'decreasing'
+    daysTracked: 0,
+  },
+  
   // Metadata
   onboardingCompleted: false,
   lastActiveAt: null,
@@ -280,4 +293,136 @@ export function getRecentQuizDelta() {
 export function clearMemory() {
   if (typeof window === 'undefined') return;
   localStorage.removeItem(MEMORY_KEY);
+}
+
+// ── Track Login (called on dashboard load) ────────────
+export function trackLogin() {
+  const mem = getMemory();
+  const today = new Date().toISOString().split('T')[0];
+  const loginDates = mem.loginDates || [];
+  
+  // Only count once per day
+  if (loginDates[loginDates.length - 1] === today) return mem;
+  
+  const newLoginDates = [...loginDates, today].slice(-60);
+  const loginCount = (mem.loginCount || 0) + 1;
+  
+  // Check if skill test is required (2nd login + no recent test)
+  const needsTest = loginCount >= 2 && !mem.lastSkillTestDate;
+  
+  // Calculate goal alignment
+  const alignment = calculateGoalAlignment(mem);
+  const history = [...(mem.goalAlignmentHistory || []), { date: today, score: alignment.score, analysis: alignment.label }].slice(-30);
+  
+  // Calculate behavior profile
+  const behaviorProfile = calculateBehaviorProfile(mem, newLoginDates, history);
+  
+  return updateMemory({
+    loginCount,
+    loginDates: newLoginDates,
+    skillTestRequired: needsTest,
+    goalAlignmentHistory: history,
+    behaviorProfile,
+  });
+}
+
+// ── Goal Alignment Calculator ─────────────────────────
+export function calculateGoalAlignment(mem) {
+  if (!mem) mem = getMemory();
+  const goal = mem.careerGoal || mem.dreamCareer || '';
+  if (!goal) return { score: 50, label: 'No goal set' };
+  
+  let score = 30; // base
+  
+  // Quiz activity in last 5 days?
+  const fiveDaysAgo = Date.now() - 5 * 86400000;
+  const recentQuizzes = (mem.quizHistory || []).filter(q => new Date(q.date).getTime() > fiveDaysAgo);
+  if (recentQuizzes.length > 0) score += 15;
+  if (recentQuizzes.length >= 3) score += 10;
+  
+  // Quiz performance
+  const avgScore = recentQuizzes.length > 0
+    ? recentQuizzes.reduce((a, q) => a + (q.percentage || 0), 0) / recentQuizzes.length
+    : 0;
+  if (avgScore >= 70) score += 15;
+  else if (avgScore >= 50) score += 8;
+  
+  // Studying relevant subject?
+  const favSubject = (mem.favoriteSubject || '').toLowerCase();
+  const recentSubjects = recentQuizzes.map(q => (q.subject || '').toLowerCase());
+  if (favSubject && recentSubjects.includes(favSubject)) score += 10;
+  
+  // Streak bonus
+  const streak = getStudyStreak();
+  if (streak >= 3) score += 10;
+  else if (streak >= 1) score += 5;
+  
+  // Uploaded material recently?
+  const recentUploads = (mem.recentActivity || []).filter(
+    a => a.type === 'pdf_upload' && new Date(a.timestamp).getTime() > fiveDaysAgo
+  );
+  if (recentUploads.length > 0) score += 5;
+  
+  score = Math.min(100, Math.max(0, score));
+  
+  let label = 'Off Track';
+  if (score >= 75) label = 'On Track';
+  else if (score >= 50) label = 'Needs Focus';
+  else if (score >= 30) label = 'Drifting';
+  
+  return { score, label };
+}
+
+// ── Behavior Profile Calculator ───────────────────────
+function calculateBehaviorProfile(mem, loginDates, alignmentHistory) {
+  const daysTracked = loginDates.length;
+  
+  // Consistency: how many of last 7 days had logins?
+  const last7 = new Date();
+  let activeDays = 0;
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(last7);
+    d.setDate(d.getDate() - i);
+    const ds = d.toISOString().split('T')[0];
+    if (loginDates.includes(ds)) activeDays++;
+  }
+  const consistency = Math.round((activeDays / 7) * 100);
+  
+  // Focus alignment: average of last 5 alignment scores
+  const recent5 = (alignmentHistory || []).slice(-5);
+  const focusAlignment = recent5.length > 0
+    ? Math.round(recent5.reduce((a, h) => a + h.score, 0) / recent5.length)
+    : 0;
+  
+  // Effort trend: compare last 3 scores vs previous 3
+  let effortTrend = 'stable';
+  if (recent5.length >= 4) {
+    const recent = recent5.slice(-2).reduce((a, h) => a + h.score, 0) / 2;
+    const earlier = recent5.slice(0, 2).reduce((a, h) => a + h.score, 0) / 2;
+    if (recent > earlier + 5) effortTrend = 'increasing';
+    else if (recent < earlier - 5) effortTrend = 'decreasing';
+  }
+  
+  return { consistency, focusAlignment, effortTrend, daysTracked };
+}
+
+// ── Should Force Skill Test? ──────────────────────────
+export function shouldForceSkillTest() {
+  const mem = getMemory();
+  // Force on 2nd+ login if never taken a skill test
+  if ((mem.loginCount || 0) >= 2 && !mem.lastSkillTestDate) return true;
+  // Also force if it's been more than 5 days since last test
+  if (mem.lastSkillTestDate) {
+    const daysSince = (Date.now() - new Date(mem.lastSkillTestDate).getTime()) / 86400000;
+    if (daysSince >= 5 && (mem.loginCount || 0) >= 2) return true;
+  }
+  return false;
+}
+
+// ── Mark Skill Test Completed ─────────────────────────
+export function markSkillTestCompleted() {
+  return updateMemory({
+    lastSkillTestDate: new Date().toISOString(),
+    skillTestRequired: false,
+  });
 }

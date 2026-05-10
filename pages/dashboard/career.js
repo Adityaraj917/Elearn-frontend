@@ -4,8 +4,9 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { motion, AnimatePresence } from "framer-motion";
 import physicsCareerData from "../../data/careerData";
-import { getMemory } from "../../utils/studentMemory";
+import { getMemory, getMemoryContext } from "../../utils/studentMemory";
 import { generateCareerInsightCards } from "../../utils/insightEngine";
+import { getTopCareerMatches, calculateCareerFit } from "../../utils/careerPredictor";
 import { 
   ArrowLeft, ChevronRight, ChevronDown, ChevronUp, MapPin, AlertTriangle, 
   Star, Shield, GraduationCap, Trophy, BookOpen, Users, Sparkles, Search, X,
@@ -25,12 +26,41 @@ export default function CareerExplorer() {
   const [loadingAI, setLoadingAI] = useState(false);
   const [memory, setMemory] = useState(null);
   const [careerInsights, setCareerInsights] = useState([]);
+  const [topMatches, setTopMatches] = useState([]);
+  const [trackAnalysis, setTrackAnalysis] = useState(null);
+  const [loadingTrack, setLoadingTrack] = useState(false);
 
   useEffect(() => {
     const mem = getMemory();
     setMemory(mem);
     setCareerInsights(generateCareerInsightCards(mem));
+    try { setTopMatches(getTopCareerMatches(5)); } catch(e) {}
   }, []);
+
+  // Ask Saarthi "Am I On Track?"
+  const askOnTrack = async () => {
+    setLoadingTrack(true);
+    setTrackAnalysis(null);
+    try {
+      const memCtx = getMemoryContext();
+      const res = await fetch(`${API_URL}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: `Analyze my career alignment. Am I on track for my dream career? Give me a probabilistic feasibility assessment with specific percentages, gap analysis, and a 30-day action plan. Be honest.`,
+          context: '',
+          history: [],
+          studentMemory: memCtx,
+          agentType: 'careerMentor'
+        }),
+      });
+      const data = await res.json();
+      setTrackAnalysis(data.reply || data.response || 'Unable to analyze right now.');
+    } catch(e) {
+      setTrackAnalysis('Could not connect to Saarthi AI. Please try again.');
+    }
+    setLoadingTrack(false);
+  };
 
   // Fetch AI suggestions for non-Physics subjects
   const fetchAICareers = async (subject) => {
@@ -128,6 +158,62 @@ export default function CareerExplorer() {
                 </motion.div>
               ))}
             </div>
+          </motion.div>
+        )}
+
+        {/* ══════ AI Career Match — Probabilistic Fit Scores ══════ */}
+        {topMatches.length > 0 && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <div className="section-label text-muted-themed">
+                <Trophy className="w-4 h-4 text-amber-400" />
+                <span>Your Top Career Matches</span>
+              </div>
+              <button onClick={askOnTrack} disabled={loadingTrack}
+                className="btn-primary text-sm py-2 px-4 flex items-center gap-2">
+                {loadingTrack ? <Loader2 className="w-4 h-4 animate-spin" /> : <Compass className="w-4 h-4" />}
+                Am I On Track?
+              </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+              {topMatches.map((career, i) => (
+                <motion.div key={career.id}
+                  initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.08 }}
+                  onClick={() => setSelectedCareer(career)}
+                  className="glass-card p-4 cursor-pointer group text-center hover:border-indigo-500/30 transition-all">
+                  <div className="relative w-16 h-16 mx-auto mb-3">
+                    <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
+                      <circle cx="32" cy="32" r="28" fill="none" stroke="rgba(99,102,241,0.15)" strokeWidth="4" />
+                      <circle cx="32" cy="32" r="28" fill="none"
+                        stroke={career.fitScore >= 70 ? '#10b981' : career.fitScore >= 45 ? '#f59e0b' : '#ef4444'}
+                        strokeWidth="4" strokeLinecap="round"
+                        strokeDasharray={`${career.fitScore * 1.76} 176`} />
+                    </svg>
+                    <span className="absolute inset-0 flex items-center justify-center text-sm font-bold">{career.fitScore}%</span>
+                  </div>
+                  <span className="text-xl">{career.icon}</span>
+                  <h4 className="text-xs font-semibold mt-1 group-hover:text-indigo-400 transition-colors line-clamp-2">{career.title}</h4>
+                  <span className={`text-[10px] font-bold mt-1 inline-block px-2 py-0.5 rounded-full ${
+                    career.alignment === 'Strong' ? 'bg-emerald-500/15 text-emerald-400' :
+                    career.alignment === 'Moderate' ? 'bg-amber-500/15 text-amber-400' : 'bg-red-500/15 text-red-400'
+                  }`}>{career.alignment} Fit</span>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* On Track Analysis Result */}
+            {trackAnalysis && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                className="glass-card p-6 mt-4 border-l-4 border-l-cyan-500">
+                <div className="flex items-start gap-3">
+                  <Sparkles className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-xs text-cyan-400 font-bold mb-2 tracking-wider">SAARTHI CAREER ANALYSIS</p>
+                    <p className="text-secondary-themed text-sm leading-relaxed whitespace-pre-line">{trackAnalysis}</p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
           </motion.div>
         )}
 

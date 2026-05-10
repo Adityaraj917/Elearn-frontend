@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { motion, AnimatePresence } from "framer-motion";
 import { auth } from "../../firebase/config";
 import { savePerformance, logActivity } from "../../utils/tracking";
-import { recordQuizResult, addActivity, getMemory } from "../../utils/studentMemory";
+import { recordQuizResult, addActivity, getMemory, markSkillTestCompleted } from "../../utils/studentMemory";
 import { generateAdaptiveWowInsight } from "../../utils/insightEngine";
 import {
   ArrowLeft, Brain, Loader2, CheckCircle, XCircle, Trophy,
@@ -27,6 +27,7 @@ export default function SkillTest() {
   const [subject, setSubject] = useState("Physics");
   const [difficulty, setDifficulty] = useState("medium");
   const [studentClass, setStudentClass] = useState("10");
+  const isForced = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('forced') === 'true';
 
   // Load profile
   useEffect(() => {
@@ -143,6 +144,7 @@ export default function SkillTest() {
       logActivity(uid, "skill_test_complete", { subject, score: evalData.score, total: evalData.total });
       recordQuizResult({ subject, score: evalData.score, total: evalData.total, weakTopics: evalData.weaknesses || [], strongTopics: evalData.strengths || [], source: 'skill_test' });
       addActivity('skill_test_complete', `${subject}: ${evalData.score}/${evalData.total}`);
+      markSkillTestCompleted();
     } catch (err) {
       setEvaluation({ score: calculatedScore, total: test.questions.length, percentage: Math.round(calculatedScore / test.questions.length * 100),
         strengths: ["Attempted all questions"], weaknesses: ["Could not analyze — backend offline"],

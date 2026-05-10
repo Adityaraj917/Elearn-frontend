@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { motion, AnimatePresence } from "framer-motion";
 import { auth, db } from "../../firebase/config";
 import { doc, getDoc } from "firebase/firestore";
-import { getMemory, getStudyStreak, addActivity, recordSessionTiming } from "../../utils/studentMemory";
+import { getMemory, getStudyStreak, addActivity, recordSessionTiming, trackLogin, shouldForceSkillTest, calculateGoalAlignment } from "../../utils/studentMemory";
 import { generateInsights } from "../../utils/insightEngine";
 import { getHeroInsight } from "../../utils/mentorPersona";
 import { getResourcesForTopic, getQuickSuggestion } from "../../utils/resourceBank";
@@ -55,6 +55,7 @@ export default function Dashboard() {
   const router = useRouter();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showForceTest, setShowForceTest] = useState(false);
 
   useEffect(() => {
     let unsubscribe;
@@ -68,6 +69,8 @@ export default function Dashboard() {
           
           addActivity('dashboard_visit', 'Opened dashboard');
           recordSessionTiming();
+          trackLogin();
+          if (shouldForceSkillTest()) setShowForceTest(true);
           setLoading(false);
         } else {
           unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -78,6 +81,8 @@ export default function Dashboard() {
                 setProfile(docSnap.data().onboardingData);
                 addActivity('dashboard_visit', 'Opened dashboard');
                 recordSessionTiming();
+                trackLogin();
+                if (shouldForceSkillTest()) setShowForceTest(true);
               } else { 
                 router.push("/onboarding"); 
                 return; 
@@ -143,6 +148,34 @@ export default function Dashboard() {
 
         <OverviewTab profile={profile} tier={tier} pEmoji={pEmoji} />
       </div>
+
+      {/* ══════ FORCED SKILL TEST MODAL ══════ */}
+      <AnimatePresence>
+        {showForceTest && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center px-4"
+            style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}>
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
+              className="glass-card p-8 max-w-lg w-full text-center">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-indigo-500/30">
+                <Brain className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold mb-3">Welcome back! 🎯</h2>
+              <p className="text-secondary-themed mb-2">Before we continue, let's assess where you stand today.</p>
+              <p className="text-muted-themed text-sm mb-6">Saarthi tracks your progress over time. A quick skill test helps us give you smarter recommendations.</p>
+              <motion.button
+                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                onClick={() => router.push('/dashboard/skill-test?forced=true')}
+                className="btn-primary w-full py-4 text-lg flex items-center justify-center gap-2">
+                <Target className="w-5 h-5" /> Take Skill Assessment
+              </motion.button>
+              <p className="text-xs text-muted-themed mt-4">This takes about 5 minutes and helps Saarthi understand your growth.</p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -238,6 +271,74 @@ function OverviewTab({ profile, tier, pEmoji }) {
           </motion.div>
         ))}
       </div>
+
+      {/* ══════ 2.5 GOAL ALIGNMENT METER ══════ */}
+      {(() => {
+        const alignment = calculateGoalAlignment(memory);
+        const bp = memory?.behaviorProfile || {};
+        const history = (memory?.goalAlignmentHistory || []).slice(-5);
+        const goalName = memory?.careerGoal || memory?.dreamCareer || '';
+        if (!goalName) return null;
+        return (
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+            className="glass-card p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Compass className="w-4 h-4 text-cyan-400" />
+                <span className="text-xs font-bold text-muted-themed tracking-wider uppercase">Goal Alignment</span>
+              </div>
+              <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+                alignment.label === 'On Track' ? 'bg-emerald-500/15 text-emerald-400' :
+                alignment.label === 'Needs Focus' ? 'bg-amber-500/15 text-amber-400' :
+                alignment.label === 'Drifting' ? 'bg-orange-500/15 text-orange-400' :
+                'bg-red-500/15 text-red-400'
+              }`}>{alignment.label}</span>
+            </div>
+
+            <div className="flex items-center gap-4">
+              {/* Arc Gauge */}
+              <div className="relative w-20 h-20 flex-shrink-0">
+                <svg className="w-20 h-20" viewBox="0 0 80 80">
+                  <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(99,102,241,0.1)" strokeWidth="6"
+                    strokeDasharray="160 54" strokeLinecap="round" transform="rotate(135 40 40)" />
+                  <circle cx="40" cy="40" r="34" fill="none"
+                    stroke={alignment.score >= 70 ? '#10b981' : alignment.score >= 45 ? '#f59e0b' : '#ef4444'}
+                    strokeWidth="6" strokeLinecap="round"
+                    strokeDasharray={`${alignment.score * 1.6} ${160 - alignment.score * 1.6 + 54}`}
+                    transform="rotate(135 40 40)"
+                    style={{ transition: 'stroke-dasharray 1s ease' }} />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-lg font-bold">{alignment.score}</span>
+                  <span className="text-[9px] text-muted-themed">/ 100</span>
+                </div>
+              </div>
+
+              {/* Info + 5-Day Pulse */}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-secondary-themed mb-2 truncate">
+                  Dream: <span className="font-semibold text-indigo-400">{goalName}</span>
+                </p>
+                <div className="flex items-center gap-1 mb-2">
+                  <span className="text-[10px] text-muted-themed mr-1">5-Day Pulse:</span>
+                  {[...Array(5)].map((_, i) => {
+                    const entry = history[i];
+                    const s = entry?.score || 0;
+                    const bg = !entry ? 'bg-gray-700' : s >= 70 ? 'bg-emerald-500' : s >= 45 ? 'bg-amber-500' : 'bg-red-500';
+                    return <div key={i} className={`w-4 h-4 rounded-full ${bg} transition-all`} title={entry ? `${entry.date}: ${s}%` : 'No data'} />;
+                  })}
+                </div>
+                <div className="flex items-center gap-3 text-[10px] text-muted-themed">
+                  <span>Consistency: <b className="text-secondary-themed">{bp.consistency || 0}%</b></span>
+                  <span>Effort: <b className={`${bp.effortTrend === 'increasing' ? 'text-emerald-400' : bp.effortTrend === 'decreasing' ? 'text-red-400' : 'text-secondary-themed'}`}>
+                    {bp.effortTrend === 'increasing' ? '↑ Rising' : bp.effortTrend === 'decreasing' ? '↓ Falling' : '→ Stable'}
+                  </b></span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        );
+      })()}
 
       {/* ══════ 3. FOCUS AREAS + QUICK ACTIONS — 2 column ══════ */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

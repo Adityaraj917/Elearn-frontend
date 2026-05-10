@@ -119,3 +119,87 @@ export function preloadVoices() {
     window.speechSynthesis.getVoices();
   };
 }
+
+// ── Voice Input (Speech Recognition) ──────────────────
+
+let recognition = null;
+
+/**
+ * Check if voice input is supported in this browser.
+ */
+export function isListeningSupported() {
+  if (typeof window === 'undefined') return false;
+  return !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+}
+
+/**
+ * Start listening for voice input.
+ * @param {Object} options
+ * @param {Function} options.onResult — called with final transcript string
+ * @param {Function} options.onInterim — called with interim transcript string (live)
+ * @param {Function} options.onEnd — called when listening stops
+ * @param {Function} options.onError — called with error
+ * @param {'en-IN'|'hi-IN'} options.lang — recognition language
+ * @returns {boolean} — whether listening started
+ */
+export function startListening({ onResult, onInterim, onEnd, onError, lang = 'en-IN' } = {}) {
+  if (!isListeningSupported()) return false;
+
+  // Stop any existing session
+  stopListening();
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.lang = lang;
+  recognition.interimResults = true;
+  recognition.continuous = false;
+  recognition.maxAlternatives = 1;
+
+  recognition.onresult = (event) => {
+    let interim = '';
+    let final = '';
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const transcript = event.results[i][0].transcript;
+      if (event.results[i].isFinal) {
+        final += transcript;
+      } else {
+        interim += transcript;
+      }
+    }
+    if (interim && onInterim) onInterim(interim);
+    if (final && onResult) onResult(final);
+  };
+
+  recognition.onerror = (event) => {
+    if (onError) onError(event.error);
+  };
+
+  recognition.onend = () => {
+    if (onEnd) onEnd();
+  };
+
+  try {
+    recognition.start();
+    return true;
+  } catch (e) {
+    if (onError) onError(e.message);
+    return false;
+  }
+}
+
+/**
+ * Stop listening for voice input.
+ */
+export function stopListening() {
+  if (recognition) {
+    try { recognition.stop(); } catch(e) {}
+    recognition = null;
+  }
+}
+
+/**
+ * Check if currently listening.
+ */
+export function isListening() {
+  return recognition !== null;
+}
