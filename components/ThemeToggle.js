@@ -11,30 +11,30 @@ export default function ThemeToggle({ className = '' }) {
       whileTap={{ scale: 0.95 }}
       aria-label="Toggle theme"
       onClick={toggleTheme}
-      className={`relative w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 ${
+      className={`relative w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300 ${
         theme === 'dark'
-          ? 'bg-gray-800/50 hover:bg-gray-700/50 text-amber-400 border border-gray-700'
-          : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-200'
+          ? 'bg-[#1A1D35] hover:bg-[#232747] text-amber-400 border border-white/[0.06] shadow-glow-sm'
+          : 'bg-brand-50 hover:bg-brand-100 text-brand-600 border border-brand-200'
       } ${className}`}
     >
       <AnimatePresence mode="wait">
         {theme === 'dark' ? (
           <motion.div
             key="sun"
-            initial={{ rotate: -90, opacity: 0 }}
-            animate={{ rotate: 0, opacity: 1 }}
-            exit={{ rotate: 90, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            initial={{ rotate: -90, scale: 0.5, opacity: 0 }}
+            animate={{ rotate: 0, scale: 1, opacity: 1 }}
+            exit={{ rotate: 90, scale: 0.5, opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
           >
             <Sun className="w-[18px] h-[18px]" />
           </motion.div>
         ) : (
           <motion.div
             key="moon"
-            initial={{ rotate: 90, opacity: 0 }}
-            animate={{ rotate: 0, opacity: 1 }}
-            exit={{ rotate: -90, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            initial={{ rotate: 90, scale: 0.5, opacity: 0 }}
+            animate={{ rotate: 0, scale: 1, opacity: 1 }}
+            exit={{ rotate: -90, scale: 0.5, opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
           >
             <Moon className="w-[18px] h-[18px]" />
           </motion.div>

@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { motion, AnimatePresence } from 'framer-motion';
 import ThemeToggle from './ThemeToggle';
-import { Sparkles, Menu, X, ChevronRight } from 'lucide-react';
+import { Brain, Menu, X, ChevronRight } from 'lucide-react';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -14,17 +14,24 @@ const navLinks = [
 export default function Navbar() {
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <header className="navbar-pro">
+    <header className={`navbar-pro ${scrolled ? 'scrolled' : ''}`}>
       <div className="max-w-7xl mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:shadow-indigo-500/30 transition-shadow">
-              <Sparkles className="w-4.5 h-4.5 text-white" />
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-400 to-accent-teal flex items-center justify-center shadow-glow-sm group-hover:shadow-glow-md transition-shadow duration-300">
+              <Brain className="w-5 h-5 text-white" />
             </div>
-            <span className="text-lg font-bold heading-section" style={{ color: 'rgb(var(--text-primary))' }}>
+            <span className="text-lg font-display font-bold bg-gradient-to-r from-brand-400 to-accent-teal bg-clip-text text-transparent">
               Saarthi
             </span>
           </Link>
@@ -35,7 +42,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`nav-link-pro ${router.pathname === link.href ? 'text-indigo-400' : ''}`}
+                className={`nav-link-pro ${router.pathname === link.href ? 'text-brand-400' : ''}`}
               >
                 {link.label}
               </Link>
@@ -47,7 +54,7 @@ export default function Navbar() {
             <ThemeToggle />
             <Link
               href="/welcome"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-semibold text-sm text-white shadow-lg shadow-indigo-500/20 transition-all duration-200 hover:shadow-indigo-500/30 hover:-translate-y-0.5 active:translate-y-0"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-brand-400 to-accent-teal rounded-xl font-semibold text-sm text-white shadow-glow-sm hover:shadow-glow-md transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0"
             >
               Get Started
               <ChevronRight className="w-4 h-4" />
@@ -59,8 +66,7 @@ export default function Navbar() {
             <ThemeToggle />
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="p-2 rounded-lg"
-              style={{ color: 'rgb(var(--text-secondary))' }}
+              className="p-2 rounded-lg text-slate-500 dark:text-slate-400"
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -76,8 +82,7 @@ export default function Navbar() {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden overflow-hidden"
-            style={{ borderTop: '1px solid rgba(var(--border-color), 0.2)' }}
+            className="md:hidden overflow-hidden border-t border-gray-200/50 dark:border-white/[0.06]"
           >
             <nav className="p-4 space-y-1">
               {navLinks.map((link) => (
@@ -85,8 +90,7 @@ export default function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className="block px-4 py-3 rounded-xl text-sm font-medium transition-colors"
-                  style={{ color: 'rgb(var(--text-secondary))' }}
+                  className="block px-4 py-3 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-brand-400 transition-colors"
                 >
                   {link.label}
                 </Link>
@@ -94,7 +98,7 @@ export default function Navbar() {
               <Link
                 href="/welcome"
                 onClick={() => setMobileOpen(false)}
-                className="block w-full text-center px-4 py-3 mt-2 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-semibold text-sm text-white"
+                className="block w-full text-center px-4 py-3 mt-2 bg-gradient-to-r from-brand-400 to-accent-teal rounded-xl font-semibold text-sm text-white"
               >
                 Get Started Free
               </Link>

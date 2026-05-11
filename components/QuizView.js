@@ -68,16 +68,16 @@ export default function QuizView({ fileId }) {
 
   if (!quiz && !loading) {
     return (
-      <div className="p-6 bg-white rounded-xl shadow-sm border border-gray-100">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
-          <Trophy className="text-yellow-500" /> Generate Quiz
+      <div className="bg-white dark:bg-[#131627] p-6 lg:p-8 rounded-3xl border border-gray-100 dark:border-white/[0.06] shadow-card">
+        <h2 className="font-display text-2xl font-bold mb-6 text-slate-800 dark:text-white flex items-center gap-2">
+          <Trophy className="text-accent-gold" /> Generate Quiz
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div>
-            <label className="font-semibold block mb-2 text-gray-700">Difficulty</label>
+            <label className="font-semibold block mb-2 text-slate-700 dark:text-slate-300 text-sm">Difficulty</label>
             <select
-              className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white"
+              className="w-full bg-white dark:bg-[#0F1120] border border-gray-200 dark:border-white/10 p-3 rounded-xl focus:ring-2 focus:ring-brand-400/20 focus:border-brand-400 text-slate-800 dark:text-white appearance-none px-4 py-3 transition-colors"
               value={difficulty}
               onChange={(e) => setDifficulty(e.target.value)}
             >
@@ -88,11 +88,11 @@ export default function QuizView({ fileId }) {
           </div>
 
           <div>
-            <label className="font-semibold block mb-2 text-gray-700">
+            <label className="font-semibold block mb-2 text-slate-700 dark:text-slate-300 text-sm">
               Number of Questions
             </label>
             <select
-              className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white"
+              className="w-full bg-white dark:bg-[#0F1120] border border-gray-200 dark:border-white/10 p-3 rounded-xl focus:ring-2 focus:ring-brand-400/20 focus:border-brand-400 text-slate-800 dark:text-white appearance-none px-4 py-3 transition-colors"
               value={numQuestions}
               onChange={(e) => setNumQuestions(e.target.value)}
             >
@@ -103,41 +103,54 @@ export default function QuizView({ fileId }) {
           </div>
         </div>
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
           onClick={generateQuiz}
-          className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg transform transition active:scale-95 flex justify-center items-center gap-2"
+          className="w-full bg-gradient-to-r from-brand-400 to-accent-teal text-white font-semibold py-4 rounded-2xl shadow-glow-sm hover:shadow-glow-md transition-all duration-300 flex justify-center items-center gap-2"
         >
           Generate Quiz
-        </button>
+        </motion.button>
       </div>
     );
   }
 
   if (loading) {
     return (
-      <div className="p-10 text-center">
-        <RefreshCw className="w-10 h-10 animate-spin text-purple-600 mx-auto mb-4" />
-        <p className="text-lg font-medium text-gray-600">Generating your personalized quiz...</p>
+      <div className="space-y-4 py-12">
+        {[1, 2, 3].map((n) => (
+          <div key={n} className="bg-white dark:bg-[#131627] rounded-3xl p-6 border border-gray-100 dark:border-white/[0.06]">
+            <div className="h-5 w-48 rounded-xl bg-gray-100 dark:bg-white/5 shimmer mb-4" />
+            <div className="space-y-3">
+              {[1, 2, 3, 4].map((o) => (
+                <div key={o} className="h-12 w-full rounded-xl bg-gray-100 dark:bg-white/5 shimmer" />
+              ))}
+            </div>
+          </div>
+        ))}
+        <p className="text-center text-sm text-brand-400 animate-pulse font-medium">
+          ✦ Generating your personalized quiz...
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto space-y-6">
       {/* Score Header */}
       {submitted && (
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8 p-6 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl text-center"
+          className="p-6 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-500/10 dark:to-emerald-500/10 border border-green-200 dark:border-green-500/20 rounded-3xl text-center"
         >
-          <h2 className="text-3xl font-bold text-green-800 mb-2">Quiz Completed!</h2>
-          <p className="text-xl text-green-700">
+          <h2 className="text-3xl font-display font-bold text-green-800 dark:text-green-400 mb-2">Quiz Completed!</h2>
+          <p className="text-xl text-green-700 dark:text-green-300">
             You scored <span className="font-extrabold text-4xl mx-2">{score} / {quiz.questions.length}</span>
           </p>
           <button
             onClick={generateQuiz}
-            className="mt-4 text-green-700 hover:text-green-900 font-semibold underline"
+            className="mt-4 text-green-700 dark:text-green-400 hover:text-green-900 dark:hover:text-green-300 font-semibold underline"
           >
             Take Another Quiz
           </button>
@@ -145,7 +158,7 @@ export default function QuizView({ fileId }) {
       )}
 
       {/* Questions List */}
-      <div className="space-y-8">
+      <div className="space-y-6">
         <AnimatePresence>
           {quiz.questions.map((q, index) => {
             const isAnswered = answers[q.id] !== undefined;
@@ -159,21 +172,23 @@ export default function QuizView({ fileId }) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
                 className={classNames(
-                  "p-6 rounded-2xl border transition-all duration-300",
+                  "p-6 rounded-3xl border transition-all duration-300",
                   {
-                    "bg-white border-gray-200 shadow-sm": !submitted,
-                    "bg-green-50 border-green-300 shadow-md": submitted && isCorrect,
-                    "bg-red-50 border-red-300 shadow-md": submitted && isWrong,
-                    "bg-gray-50 border-gray-300": submitted && !isAnswered
+                    "bg-white dark:bg-[#131627] border-gray-100 dark:border-white/[0.06] shadow-card": !submitted,
+                    "bg-green-50 dark:bg-green-500/10 border-green-300 dark:border-green-500/20": submitted && isCorrect,
+                    "bg-red-50 dark:bg-red-500/10 border-red-300 dark:border-red-500/20": submitted && isWrong,
+                    "bg-gray-50 dark:bg-white/[0.02] border-gray-200 dark:border-white/[0.06]": submitted && !isAnswered
                   }
                 )}
               >
                 <div className="flex justify-between items-start mb-4">
-                  <h3 className="font-bold text-lg text-gray-800 flex-1">
-                    <span className="text-purple-600 mr-2">#{index + 1}</span>
+                  <h3 className="font-bold text-lg text-slate-800 dark:text-white flex-1">
+                    <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br from-brand-400 to-accent-teal text-white text-xs font-bold mr-2">
+                      {index + 1}
+                    </span>
                     {q.question}
                   </h3>
-                  {submitted && isCorrect && <CheckCircle className="text-green-600 w-6 h-6 flex-shrink-0" />}
+                  {submitted && isCorrect && <CheckCircle className="text-green-500 w-6 h-6 flex-shrink-0" />}
                   {submitted && isWrong && <XCircle className="text-red-500 w-6 h-6 flex-shrink-0" />}
                 </div>
 
@@ -182,19 +197,19 @@ export default function QuizView({ fileId }) {
                     const isSelected = answers[q.id] === i;
                     const isCorrectOption = q.correctIndex === i;
 
-                    let optionClass = "border-gray-200 hover:bg-purple-50 hover:border-purple-300";
+                    let optionClass = "border-gray-200 dark:border-white/[0.08] hover:bg-brand-50 dark:hover:bg-brand-400/5 hover:border-brand-300 dark:hover:border-brand-400/30 text-slate-700 dark:text-slate-300";
 
-                    if (isSelected) {
-                      optionClass = "bg-purple-100 border-purple-500 ring-1 ring-purple-500";
+                    if (isSelected && !submitted) {
+                      optionClass = "bg-brand-50 dark:bg-brand-400/10 border-brand-400 ring-1 ring-brand-400 text-brand-700 dark:text-brand-300";
                     }
 
                     if (submitted) {
                       if (isCorrectOption) {
-                        optionClass = "bg-green-100 border-green-600 ring-1 ring-green-600 text-green-900 font-medium";
+                        optionClass = "bg-green-50 dark:bg-green-500/10 border-green-400 dark:border-green-500/30 ring-1 ring-green-400 text-green-700 dark:text-green-400 font-medium";
                       } else if (isSelected && !isCorrectOption) {
-                        optionClass = "bg-red-100 border-red-500 text-red-900";
+                        optionClass = "bg-red-50 dark:bg-red-500/10 border-red-400 dark:border-red-500/30 text-red-700 dark:text-red-400";
                       } else {
-                        optionClass = "opacity-50 grayscale";
+                        optionClass = "opacity-40 border-gray-200 dark:border-white/[0.04] text-slate-500 dark:text-slate-500";
                       }
                     }
 
@@ -202,11 +217,11 @@ export default function QuizView({ fileId }) {
                       <div
                         key={i}
                         onClick={() => handleOptionSelect(q.id, i)}
-                        className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center gap-3 ${optionClass}`}
+                        className={`p-4 rounded-xl border cursor-pointer transition-all duration-300 flex items-center gap-3 ${optionClass}`}
                       >
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border ${isSelected || (submitted && isCorrectOption)
-                            ? "bg-white border-transparent text-black"
-                            : "bg-gray-100 text-gray-500"
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 ${isSelected || (submitted && isCorrectOption)
+                            ? "bg-white border-transparent text-slate-800 dark:text-slate-900"
+                            : "bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-slate-500 dark:text-slate-400"
                           }`}>
                           {String.fromCharCode(65 + i)}
                         </div>
@@ -221,7 +236,7 @@ export default function QuizView({ fileId }) {
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
-                    className="mt-4 p-4 bg-blue-50 text-blue-800 rounded-lg text-sm border border-blue-100"
+                    className="mt-4 p-4 bg-brand-50 dark:bg-brand-400/10 text-brand-700 dark:text-brand-300 rounded-xl text-sm border border-brand-200 dark:border-brand-400/20"
                   >
                     <strong>Explanation:</strong> {q.explanation}
                   </motion.div>
@@ -234,15 +249,17 @@ export default function QuizView({ fileId }) {
 
       {!submitted && quiz.questions.length > 0 && (
         <div className="mt-8 text-center pb-12">
-          <button
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
             onClick={handleSubmit}
             disabled={Object.keys(answers).length < quiz.questions.length}
-            className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white text-lg font-bold px-10 py-4 rounded-full shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1"
+            className="bg-gradient-to-r from-brand-400 to-accent-teal disabled:opacity-40 disabled:cursor-not-allowed text-white text-lg font-bold px-10 py-4 rounded-2xl shadow-glow-sm hover:shadow-glow-md transition-all duration-300"
           >
             Submit Quiz
-          </button>
+          </motion.button>
           {Object.keys(answers).length < quiz.questions.length && (
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
               Answer all questions to submit
             </p>
           )}
